@@ -1,14 +1,21 @@
 const debug = require('debug')('supper-server:entry')
+const chalk = require('chalk')
 
-// import app from './factory'
-const app = require('./factory')
+import app, {
+  config
+} from './factory'
+
+debug('===api config:===', config.get('api'))
+const {
+  port: PORT,
+  host: HOST
+} = config.get('api')
 
 
-const PORT = 8888
 app.listen(PORT, err => {
   if (err) {
-    debug('app booting error')
+    chalk.red('app booting error')
     throw err
   }
-  debug(`server starting on http://${server}:${PORT}`)
+  debug(`server starting on http://${HOST}:${PORT}`)
 })
