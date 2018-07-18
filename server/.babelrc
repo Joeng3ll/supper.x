@@ -1,0 +1,38 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": "commonjs",
+        "useBuiltIns": true,
+        "targets": {
+          "node": 8
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "bulk-import",
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    "transform-export-extensions",
+    "syntax-export-extensions",
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "^@/(.+)": "./src/\\1"
+        }
+      }
+    ]
+  ],
+  "env": {
+    "development": {},
+    "production": {},
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  }
+}
