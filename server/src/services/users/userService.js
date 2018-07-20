@@ -1,7 +1,7 @@
 const debug = require('debug')('supper-server:userService')
 class UserService {
-  constructort(){
-
+  constructort(userCollection){
+    this.userCollection = userCollection
   }
 }
 
