@@ -10,7 +10,7 @@ module.exports = {
     port: {
       doc: 'The API port',
       format: 'port',
-      default: 8088,
+      default: 8888,
     },
     host: {
       doc: 'The API HOST',

@@ -11,6 +11,8 @@ const {
   host: HOST
 } = config.get('api')
 
+app.register(require('./services').default)
+
 
 app.listen(PORT, err => {
   if (err) {
