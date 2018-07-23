@@ -1,5 +1,6 @@
 const debug = require('debug')('supper-server:entry')
 const chalk = require('chalk')
+const fp = require('fastify-plugin')
 
 import app, {
   config
@@ -11,7 +12,18 @@ const {
   host: HOST
 } = config.get('api')
 
-app.register(require('./services').default)
+/**
+ *  global config
+ */
+
+app.register(fp(async (fastify) => {
+  fastify.decorate('config', config.get('wechat'))
+}))
+
+/**
+ *   logic service
+ */
+app.register(require('./services'))
 
 
 app.listen(PORT, err => {

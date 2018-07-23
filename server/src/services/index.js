@@ -1,6 +1,6 @@
 const debug = require('debug')('supper-server:service')
 
-export default (fastify, opts, next) => {
+module.exports = (fastify, opts, next) => {
   /**
    *   用户相关
    */

@@ -21,5 +21,19 @@ module.exports = {
       format: 'nat',
       default: 60 * 1000, // 1 minutes
     },
+  },
+  wechat: {
+    host: {
+      doc: 'The wechat API HOST',
+      default: 'qyapi.weixin.qq.com',
+    },
+    corpid: {
+      doc: 'The wechat business corpid',
+      default: ''
+    },
+    corpsecret: {
+      doc: 'The application secret',
+      default: ''
+    }
   }
 }

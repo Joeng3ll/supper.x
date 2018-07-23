@@ -31,11 +31,8 @@ async function registerRoutes(fastify, opts) {
    *  @return {number} expires_in token有效期限
    *  需要缓存和重新获取 access_token
    */
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/get_access_token', async (request, reply) => {
     debug('get_access_token')
-    const access_token = await fastify.wechatService.getAccessTokenFromWechat()
-    reply.code(200).send({
-      access_token
-    })
+    reply.code(200).send({})
   })
 }
