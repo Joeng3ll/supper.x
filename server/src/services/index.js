@@ -15,5 +15,12 @@ export default (fastify, opts, next) => {
     prefix: '/orders'
   })
 
+  /**
+   *  企业微信相关
+   */
+    fastify.register(require('./wechat').default, {
+      prefix: '/wechat'
+    })
+
   next()
 }
