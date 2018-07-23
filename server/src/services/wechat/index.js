@@ -23,12 +23,19 @@ module.exports = async (fastify, opts) => {
 }
 
 async function registerRoutes(fastify, opts) {
-  fastify.post('/suite/receive', async (request, reply) => {
-    debug('/suite/receive request params body:', request.body)
-    debug('/suite/receive request params query:', request.query)
-    debug('/suite/receive request params headers:', request.headers)
+  /**
+   *  1、获取access_token
+   *  @param {string} corpid
+   *  @param {string} corpsecret
+   *  @return {string} access_token
+   *  @return {number} expires_in token有效期限
+   *  需要缓存和重新获取 access_token
+   */
+  fastify.get('/', async (request, reply) => {
+    debug('get_access_token')
+    const access_token = await fastify.wechatService.getAccessTokenFromWechat()
     reply.code(200).send({
-      success: true
+      access_token
     })
   })
 }
