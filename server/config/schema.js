@@ -14,7 +14,7 @@ module.exports = {
     },
     host: {
       doc: 'The API HOST',
-      default: '0.0.0.0'
+      default: 'test.supper.com'
     },
     timeout: {
       doc: 'The API timeout',
