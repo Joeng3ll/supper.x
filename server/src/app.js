@@ -17,7 +17,7 @@ const {
  */
 
 app.register(fp(async (fastify) => {
-  fastify.decorate('config', config.get('wechat'))
+  fastify.decorate('config', config)
 }))
 
 /**

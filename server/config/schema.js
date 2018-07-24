@@ -34,6 +34,10 @@ module.exports = {
     corpsecret: {
       doc: 'The application secret',
       default: ''
+    },
+    cache_max_age: {
+      doc: 'The token cache expires',
+      default: '7200'
     }
   }
 }
