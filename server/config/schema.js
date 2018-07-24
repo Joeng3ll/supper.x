@@ -35,6 +35,14 @@ module.exports = {
       doc: 'The application secret',
       default: ''
     },
+    token_cache_name:{
+      doc: 'The access token cache name',
+      default: 'access_token'
+    },
+    ticket_cache_name: {
+      doc: 'The userticket cache name',
+      default: 'user_ticket'
+    },
     cache_max_age: {
       doc: 'The token cache expires',
       default: '7200'

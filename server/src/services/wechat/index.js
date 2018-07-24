@@ -1,7 +1,9 @@
 const debug = require('debug')('supper-server:wechat')
 
 const fp = require('fastify-plugin')
+const assert = require('assert')
 
+const Boom = require('boom')
 const WechatService = require('./wechatService')
 const WechatCache = require('../../utils/cache')
 
@@ -11,24 +13,12 @@ const LRU_OPTIONS = {
   lenth: function (n, key) {
     return n * 2 + key.length
   },
-  // dispose: function (key, n) {
-    // n.close()
-  // },
-  maxAge: 7200
+  // TODO 缓存时间根据接口返回更新
+  maxAge: 7200 * 1000
 }
 
 
 module.exports = async (fastify, opts) => {
-
-  /**
-   *  logic Service
-   */
-  fastify.register(fp(
-    async (fastify, opts) => {
-      const wechatService = new WechatService(fastify.config.get('wechat'))
-      fastify.decorate('wechatService', wechatService)
-    }
-  ))
 
   /**
    *  cache
@@ -37,6 +27,16 @@ module.exports = async (fastify, opts) => {
     async (fastify, opts) => {
       const wechatCache = new WechatCache(LRU_OPTIONS)
       fastify.decorate('wechatCache', wechatCache)
+    }
+  ))
+
+  /**
+   *  logic Service
+   */
+  fastify.register(fp(
+    async (fastify, opts) => {
+      const wechatService = new WechatService(fastify.config.get('wechat'), fastify.wechatCache)
+      fastify.decorate('wechatService', wechatService)
     }
   ))
 
@@ -50,23 +50,28 @@ module.exports = async (fastify, opts) => {
 async function registerRoutes(fastify, opts) {
   /**
    *  1、获取access_token
-   *  @param {string} corpid
-   *  @param {string} corpsecret
-   *  @return {string} access_token
-   *  @return {number} expires_in token有效期限
-   *  需要缓存和重新获取 access_token
    */
   fastify.get('/get_access_token', async (request, reply) => {
-    const CACHE_KEY = 'access_token'
-    let cache_token = fastify.wechatCache.get(CACHE_KEY)
-    debug('=== getAccessTokenFromCache:', cache_token)
-    if (!cache_token) {
-      cache_token = await fastify.wechatService.getAccessTokenFromWechat()
-      debug('=== getAccessTokenFromWechat:', cache_token)
-      fastify.wechatCache.set(CACHE_KEY, cache_token)
-    }
+    const cache_token = await fastify.wechatService.getAccessToken()
+    debug('=== getAccessToken:', cache_token)
     reply.code(200).send({
       cache_token
     })
   })
+
+  /**
+   *  2、获取用户信息
+   */
+  fastify.get('/get_user_info', async (request, reply) => {
+    const {
+      code
+    } = request.query
+    assert(code, 'code required')
+    const user_ticket = await fastify.wechatService.getUserTicket(code)
+    debug('=== getUserTicket:', user_ticket)
+    reply.code(200).send({
+      user_ticket
+    })
+  })
+
 }
