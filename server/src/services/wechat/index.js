@@ -53,7 +53,6 @@ async function registerRoutes(fastify, opts) {
    */
   fastify.get('/get_access_token', async (request, reply) => {
     const cache_token = await fastify.wechatService.getAccessToken()
-    debug('=== getAccessToken:', cache_token)
     reply.code(200).send({
       cache_token
     })
@@ -62,15 +61,29 @@ async function registerRoutes(fastify, opts) {
   /**
    *  2、获取用户信息
    */
-  fastify.get('/get_user_info', async (request, reply) => {
+  fastify.get('/get_user_ticket', async (request, reply) => {
     const {
       code
     } = request.query
     assert(code, 'code required')
     const user_ticket = await fastify.wechatService.getUserTicket(code)
-    debug('=== getUserTicket:', user_ticket)
     reply.code(200).send({
       user_ticket
+    })
+  })
+
+  /**
+   *  获取用户详情
+   */
+  fastify.get('/get_user_detail', async (request,reply) => {
+    const {
+      code
+    } = request.query
+    assert(code, 'code required')
+    const userDetail = await fastify.wechatService.getUserDetail(code)
+    debug(' ===getUserDetail:=== ', userDetail)
+    reply.code(200).send({
+      ...userDetail
     })
   })
 

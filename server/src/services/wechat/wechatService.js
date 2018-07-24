@@ -28,6 +28,7 @@ class WechatService {
     // 1、get token from cache
     const token_in_cache = this.getFromCache(this.config.token_cache_name)
     if (token_in_cache) {
+      debug('=== getAccessToken From cache:===', token_in_cache)
       return token_in_cache
     }
 
@@ -42,9 +43,10 @@ class WechatService {
       assert(access_token, 'get access_token failed')
       // set toekn into cache
       this.cache.set(CACHE_KEY, access_token, expires_in)
+      debug('=== getAccessToken From api:===', access_token)
       return access_token
     }).catch((err) => {
-      debug('=== getAccessTokenFromWechat Error:', err)
+      debug('=== getAccessTokenFromApi Error:', err)
       return ''
     })
   }
@@ -53,25 +55,28 @@ class WechatService {
     let cacheVal = ''
     try {
       cacheVal = this.cache.get(cacheKey)
-      debug('getFromCache:', cacheKey, cacheVal)
     } catch (e) {
-      debug('getFromCache Error:', e)
+      debug(`=== ${cacheKey} getCache Error:`, e)
     }
     return cacheVal
   }
 
   /**
-   *  2、获取用户信息
+   *  2、获取用户票据
    *  @param {string} code
    *  @param {string} access_token
-   *  @return {user_ticket}
+   *  @return {string} user_ticket
    */
   getUserTicket = async (code) => {
     const ticket_in_cache = this.getFromCache(this.config.ticket_cache_name)
-    if (ticket_in_cache) {
-      return ticket_in_cache
-    }
     const access_token = await this.getAccessToken()
+    if (ticket_in_cache) {
+      debug('=== getUserTicket From cache:===', ticket_in_cache)
+      return {
+        ticket_in_cache,
+        access_token
+      }
+    }
     const url = `${this.urlPrefix}/cgi-bin/user/getuserinfo?access_token=${access_token}&code=${code}`
     return http(url).then((res) => {
       debug('=== getUserTicket res:', res)
@@ -82,10 +87,34 @@ class WechatService {
       assert(user_ticket, 'getUserTicket failed')
       // set toekn into cache
       this.cache.set(this.config.ticket_cache_name, user_ticket, expires_in)
-      return user_ticket
+      debug('=== getUserTicket From api:===', user_ticket,access_token)
+      return {
+        user_ticket,
+        access_token
+      }
     }).catch((err) => {
       debug('=== getUserTicket Error:', err)
       return ''
+    })
+  }
+
+  getUserDetail = async (code) => {
+    const {
+      user_ticket,
+      access_token
+    } = await this.getUserTicket(code)
+    const url = `${this.urlPrefix}/cgi-bin/user/getuserdetail?access_token=${access_token}`
+    const options = {
+      method: 'POST',
+      uri: url,
+      body: {
+        user_ticket
+      },
+      json: true // Automatically stringifies the body to JSON
+    }
+    return http(options).catch((err) => {
+      debug('getUserDetail Error:', err)
+      return {}
     })
   }
 
