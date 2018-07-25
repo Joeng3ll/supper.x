@@ -3,8 +3,11 @@ const debug = require('debug')('supper-server:wechatService')
 const assert = require('http-assert')
 
 const http = require('../../utils/http')
-class WechatService {
+
+const AbstractService = require('../AbstractService')
+class WechatService extends AbstractService {
   constructor(config, cache) {
+    super()
     this.config = config
     this.cache = cache
     this.urlPrefix = `https://${config.host}`
@@ -73,7 +76,7 @@ class WechatService {
     if (ticket_in_cache) {
       debug('=== getUserTicket From cache:===', ticket_in_cache)
       return {
-        ticket_in_cache,
+        user_ticket: ticket_in_cache,
         access_token
       }
     }
@@ -100,12 +103,11 @@ class WechatService {
     })
   }
 
-  getUserDetail = async (code) => {
-    const {
-      user_ticket,
-      access_token
-    } = await this.getUserTicket(code)
+  getUserDetail = async (user_ticket) => {
+    const
+      access_token = await this.getAccessToken()
     assert(user_ticket, 403, 'get user_ticket Error')
+
     assert(access_token, 403, 'get access_token Error')
     const url = `${this.urlPrefix}/cgi-bin/user/getuserdetail?access_token=${access_token}`
     const options = {
@@ -117,13 +119,16 @@ class WechatService {
       json: true // Automatically stringifies the body to JSON
     }
     return http(options).then((res) => {
-      const userDetail = typeof res === 'string' ? JSON.parse(res) : res
+      if (res.errcode !== 0) {
+        throw res
+      }
       return {
         ...res,
         user_ticket
       }
-    }).catch((err) => {
+    }).catch((err = {}) => {
       debug('getUserDetail Error:', err)
+      assert(err.errcode === 0, 403, `${err.errmsg}`)
       return {}
     })
   }

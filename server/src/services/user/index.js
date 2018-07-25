@@ -3,7 +3,7 @@ const debug = require('debug')('supper-server:users')
 const fp = require('fastify-plugin')
 const UserService = require('./userService')
 
-module.exports = async (fastify, opts) => {
+module.exports = fp(async (fastify, opts) => {
   fastify.register(async function (fastify, opts) {
 
     /**
@@ -42,10 +42,10 @@ module.exports = async (fastify, opts) => {
     fastify.register(registerRoutes)
 
   })
-}
+})
 
 async function registerRoutes(fastify, opts) {
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/add', async (request, reply) => {
     debug('test userRoutes')
   })
 }

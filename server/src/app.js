@@ -25,6 +25,10 @@ app.register(fp(async (fastify) => {
  */
 app.register(require('./services'))
 
+app.register(fp(async (fastify) => {
+  fastify.decorate('errorCode', require('./utils/errorCode'))
+}))
+
 
 app.listen(PORT, err => {
   if (err) {

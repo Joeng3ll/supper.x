@@ -18,7 +18,10 @@ const LRU_OPTIONS = {
 }
 
 
-module.exports = async (fastify, opts) => {
+/**
+ *  fp()   在service中调用其他service
+ */
+module.exports = fp(async (fastify, opts) => {
 
   /**
    *  cache
@@ -35,7 +38,9 @@ module.exports = async (fastify, opts) => {
    */
   fastify.register(fp(
     async (fastify, opts) => {
-      const wechatService = new WechatService(fastify.config.get('wechat'), fastify.wechatCache)
+      const wechatService = new WechatService(fastify.config.get('wechat'), fastify.wechatCache, {
+        errorCode: fastify.errorCode
+      })
       fastify.decorate('wechatService', wechatService)
     }
   ))
@@ -45,7 +50,7 @@ module.exports = async (fastify, opts) => {
    */
   fastify.register(registerRoutes)
 
-}
+})
 
 async function registerRoutes(fastify, opts) {
   /**
@@ -80,7 +85,8 @@ async function registerRoutes(fastify, opts) {
       code
     } = request.query
     assert(code, 'code required')
-    const userDetail = await fastify.wechatService.getUserDetail(code)
+    const user_ticket = await fastify.wechatService.getUserTicket(code)
+    const userDetail = await fastify.wechatService.getUserDetail(user_ticket)
     debug(' ===getUserDetail:=== ', userDetail)
     reply.code(200).send({
       ...userDetail,

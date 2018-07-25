@@ -10,13 +10,13 @@ const addMenu = {
           type: 'object',
           properties: {
             startTime: {
-              type: 'date'
+              type: 'string'
             },
             endTime: {
-              type: 'date'
+              type: 'string'
             },
             dishes: {
-              type: 'array'
+              type: 'string'
             }
           }
         }
@@ -25,9 +25,6 @@ const addMenu = {
     response: {
       '2xx': {
         type: 'object',
-        properties: {
-
-        }
       }
     }
   }
