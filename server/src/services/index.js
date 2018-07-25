@@ -4,16 +4,9 @@ module.exports = (fastify, opts, next) => {
   /**
    *   用户相关
    */
-  fastify.register(require('./users'), {
-    prefix: '/users'
+  fastify.register(require('./user'), {
+    prefix: '/user'
   })
-
-  /**
-   *   点餐相关
-   */
-  // fastify.register(require('./orders').default, {
-  //   prefix: '/orders'
-  // })
 
   /**
    *  企业微信相关

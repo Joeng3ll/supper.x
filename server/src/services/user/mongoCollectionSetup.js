@@ -8,17 +8,23 @@ module.exports = async function (db, userCollection) {
   await db.command({
     'collMod': userCollection.s.name,
     validator: {
-      username: {
+      userid: {
         $type: 'string'
       },
-      password: {
+      name: {
+        $type: 'string'
+      },
+      gender: {
+        $type: 'string'
+      },
+      avatar: {
         $type: 'string'
       }
     }
   })
 
   await db.createIndex({
-    username: 1
+    userid: 1
   }, {
     unique: true
   })

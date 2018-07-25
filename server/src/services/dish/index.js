@@ -1,7 +1,7 @@
-const debug = require('debug')('supper-server:users')
+const debug = require('debug')('supper-server:dish')
 
 const fp = require('fastify-plugin')
-const UserService = require('./userService')
+const DishService = require('./dishService')
 
 module.exports = async (fastify, opts) => {
   fastify.register(async function (fastify, opts) {
@@ -13,25 +13,25 @@ module.exports = async (fastify, opts) => {
 
     /**
      *   create login object and store it in the fastify instance
-     *   and use fp() to ask to fastify don't encapsulate decorateWithUserCollection
+     *   and use fp() to ask to fastify don't encapsulate decorateWithDishCollection
      */
-    fastify.register(fp(async function decorateWithUserCollection(fastify, opts) {
-      fastify.decorate('userCollection', fastify.mongo.db.collection('users'))
+    fastify.register(fp(async function decorateWithDishCollection(fastify, opts) {
+      fastify.decorate('dishCollection', fastify.mongo.db.collection('dish'))
     }))
 
     /**
      *   Mongodb has no schema but we need to specify some indexes and validators
      */
     fastify.register(async function (fastify, opts) {
-      require('./mongoCollectionSetup')(fastify.mongo.db, fastify.userCollection)
+      require('./mongoCollectionSetup')(fastify.mongo.db, fastify.dishCollection)
     })
 
     /**
      *   add logic business interface
      */
     fastify.register(fp(async function (fastify, opts) {
-      const userService = new UserService(fastify.userCollection)
-      fastify.decorate('userService', userService)
+      const dishService = new DishService(fastify.dishCollection)
+      fastify.decorate('dishService', dishService)
     }))
 
     /**
@@ -44,6 +44,6 @@ module.exports = async (fastify, opts) => {
 
 async function registerRoutes(fastify, opts) {
   fastify.get('/', async (request, reply) => {
-    debug('test userRoutes')
+    debug('test dishRoutes')
   })
 }

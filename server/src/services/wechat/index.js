@@ -1,7 +1,7 @@
 const debug = require('debug')('supper-server:wechat')
 
 const fp = require('fastify-plugin')
-const assert = require('assert')
+const assert = require('http-assert')
 
 const Boom = require('boom')
 const WechatService = require('./wechatService')
@@ -75,7 +75,7 @@ async function registerRoutes(fastify, opts) {
   /**
    *  获取用户详情
    */
-  fastify.get('/get_user_detail', async (request,reply) => {
+  fastify.get('/get_user_detail', async (request, reply) => {
     const {
       code
     } = request.query
@@ -83,7 +83,7 @@ async function registerRoutes(fastify, opts) {
     const userDetail = await fastify.wechatService.getUserDetail(code)
     debug(' ===getUserDetail:=== ', userDetail)
     reply.code(200).send({
-      ...userDetail
+      ...userDetail,
     })
   })
 

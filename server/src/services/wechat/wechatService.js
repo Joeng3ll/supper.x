@@ -1,6 +1,6 @@
 const debug = require('debug')('supper-server:wechatService')
 
-const assert = require('assert')
+const assert = require('http-assert')
 
 const http = require('../../utils/http')
 class WechatService {
@@ -40,7 +40,7 @@ class WechatService {
         access_token,
         expires_in
       } = JSON.parse(res)
-      assert(access_token, 'get access_token failed')
+      assert(access_token, 403, 'get access_token failed')
       // set toekn into cache
       this.cache.set(CACHE_KEY, access_token, expires_in)
       debug('=== getAccessToken From api:===', access_token)
@@ -84,16 +84,18 @@ class WechatService {
         user_ticket,
         expires_in
       } = JSON.parse(res)
-      assert(user_ticket, 'getUserTicket failed')
+      assert(user_ticket, 403, 'getUserTicket failed')
       // set toekn into cache
       this.cache.set(this.config.ticket_cache_name, user_ticket, expires_in)
-      debug('=== getUserTicket From api:===', user_ticket,access_token)
+      debug('=== getUserTicket From api:===', user_ticket, access_token)
       return {
         user_ticket,
         access_token
       }
     }).catch((err) => {
       debug('=== getUserTicket Error:', err)
+      // TODO ERROR Handing
+      // throw err
       return ''
     })
   }
@@ -103,6 +105,8 @@ class WechatService {
       user_ticket,
       access_token
     } = await this.getUserTicket(code)
+    assert(user_ticket, 403, 'get user_ticket Error')
+    assert(access_token, 403, 'get access_token Error')
     const url = `${this.urlPrefix}/cgi-bin/user/getuserdetail?access_token=${access_token}`
     const options = {
       method: 'POST',
@@ -112,7 +116,13 @@ class WechatService {
       },
       json: true // Automatically stringifies the body to JSON
     }
-    return http(options).catch((err) => {
+    return http(options).then((res) => {
+      const userDetail = typeof res === 'string' ? JSON.parse(res) : res
+      return {
+        ...res,
+        user_ticket
+      }
+    }).catch((err) => {
       debug('getUserDetail Error:', err)
       return {}
     })
