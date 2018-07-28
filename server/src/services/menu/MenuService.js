@@ -6,10 +6,10 @@ class MenuService extends AbstractService {
     // super()
   }
 
-  addMenu = async (userId, menu) => {
-    assert(userId, 400, 'Params userId is required')
+  addMenu = async (creator, menu) => {
+    assert(creator, 400, 'Params creator is required')
     assert(menu, 400, 'Params menu is required')
-    debug('menuService collections:', this.collection)
+
   }
 }
 

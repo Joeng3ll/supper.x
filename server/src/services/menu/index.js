@@ -59,11 +59,12 @@ async function registerRoutes(fastify, opts) {
       menu
     } = request.body
     const {
-      userid
+      userid:creator
     } = await fastify.wechatService.getUserDetail(user_ticket)
-    fastify.menuService.addMenu(userid, menu)
+    fastify.menuService.addMenu(creator, menu)
     reply.code(200).send({
       // ...userDetail
+      userid
     })
   })
 }
