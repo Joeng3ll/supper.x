@@ -29,11 +29,11 @@ module.exports = {
     },
     corpid: {
       doc: 'The wechat business corpid',
-      default: ''
+      default: 'ww7476710148f3f0ad'
     },
     corpsecret: {
       doc: 'The application secret',
-      default: ''
+      default: 'U46pEY9sGrR_n05QvX1VuosMTrKiWl1RtWiM5DXTUbU'
     },
     token_cache_name:{
       doc: 'The access token cache name',
